@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html ng-app="items">
+<head>
+    <title>Mahva</title>
+
+    <!-- Bostrap y grilla -->
+    <link rel="stylesheet" href="lib/dependencies/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="lib/dependencies/css/ng-grid.min.css" />
+
+    <!-- Style -->
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+    <!--  Angular -->
+    <script src="lib/dependencies/angular.min.js"></script>
+    <script src="lib/dependencies/angular-resource.min.js"></script>
+    <script src="lib/dependencies/jquery.min.js"></script>
+    <script src="lib/dependencies/ui-bootstrap-tpls.min.js"></script>
+    <script src="lib/dependencies/ng-grid.min.js"></script>
+
+    <!-- item script -->
+    <script src="script/item.js"></script>
+
+</head>
+
+<body>
+
+<h1>Mahva Test -  Daniel Avila</h1>
+
+<br/>
+
+<div class="message" ng-controller="alertMessagesController">
+    <alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)">{{alert.msg}}</alert>
+</div>
+<br>
+
+<!-- Grilla-->
+<div data-ng-controller="itemsListController" data-ng-init="refreshGrid()"></div>
+
+<div class="grid" ng-controller="itemsListController">
+    <div>
+        <h3>List items</h3>
+    </div>
+
+    <div class="gridStyle" ng-grid="gridOptions" ></div>
+
+    <!-- Paginacion , no implementada -->
+    <pagination direction-links="true" boundary-links="true"
+                total-items="items.totalResults" items-per-page="items.pageSize"
+                ng-model="items.currentPage" ng-change="refreshGrid()">
+    </pagination>
+</div>
+
+<div class="form" ng-controller="itemsFormController">
+
+    <div ng-if="item.id == null">
+        <h3>Add item</h3>
+    </div>
+
+    <div ng-if="item.id != null">
+        <h3>Edit item</h3>
+    </div>
+
+    <div>
+
+        <form name="itemForm" ng-submit="updateitem()" novalidate>
+
+          <!--  Div description -->
+            <div class="form-group" ng-class="{'has-error' : itemForm.description.$invalid && itemForm.description.$dirty}">
+                <label for="description">Description:</label>
+
+                <span ng-class="{'glyphicon glyphicon-ok' : itemForm.description.$valid && itemForm.description.$dirty}"></span>
+
+                <input id="description" name="description" type="text" class="form-control" maxlength="100"
+                       ng-model="item.description"
+                       required ng-minlength="5" ng-maxlength="100"/>
+
+                <!-- Validaciones de description -->
+                <p class="help-block" ng-show="itemForm.description.$error.required">Add Description.</p>
+                <p class="help-block" ng-show="itemForm.description.$error.minlength">Description must be at least 5 characters long.</p>
+                <p class="help-block" ng-show="itemForm.description.$error.maxlength">Description cannot be longer than 100 characters.</p>
+            </div>
+
+            <!-- Div URL -->
+            <div class="form-group" ng-class="{'has-error' : itemForm.imageUrl.$invalid && itemForm.imageUrl.$dirty}">
+                <label for="imageUrl">Image URL:</label>
+
+                <span ng-class="{'glyphicon glyphicon-ok' : itemForm.imageUrl.$valid && itemForm.imageUrl.$dirty}"></span>
+
+                <input id="imageUrl" name="imageUrl" defaultValue="valor" type="url" class="form-control" maxlength="500"
+                       ng-model="item.imageUrl"
+                       required/>
+
+               <!-- Validaciones de URL -->
+                <p class="help-block" ng-show="itemForm.imageUrl.$error.required">Add Image URL.</p>
+                <p class="help-block" ng-show="itemForm.imageUrl.$invalid && itemForm.imageUrl.$dirty">Invalid Image URL.</p>
+            </div>
+
+            <div class="avatar" ng-if="item.imageUrl">
+                <img ng-src="{{item.imageUrl}}" width="400" height="250"/>
+            </div>
+
+            <!--  Div buttons-->
+            <div class="buttons">
+                <button type="button" class="btn btn-primary" ng-click="clearForm()">Clear</button>
+                <button type="submit" class="btn btn-primary" ng-disabled="itemForm.$invalid">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
